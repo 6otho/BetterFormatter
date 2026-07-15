@@ -1,5 +1,9 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BetterFormatter Configurator</title><!-- v2 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BetterFormatter Configurator</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:system-ui,-apple-system,sans-serif;background:#0a0a0a;color:#fff;min-height:100vh}
@@ -40,7 +44,9 @@ h1{font-size:1.5rem;font-weight:800;margin-bottom:.2rem}
 .abtn:hover{background:#333;border-color:#444}
 #guide .note{font-size:.7rem;color:#999;margin-bottom:.8rem;line-height:1.5}
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#4ade80;padding:.5rem 1rem;border-radius:8px;font-size:.78rem;display:none;z-index:99;border:1px solid #2a2a2a}
-</style></head><body>
+</style>
+</head>
+<body>
 <div class="wrap">
 <h1>BetterFormatter</h1>
 <p class="sub">Configure your Fusion stream tags, preview, and export.</p>
@@ -113,6 +119,7 @@ h1{font-size:1.5rem;font-weight:800;margin-bottom:.2rem}
 <div class="toast" id="toast">Copied!</div>
 
 <script>
+// 【修改】图片前缀路径，已换成你的专属仓库
 const I='https://raw.githubusercontent.com/6otho/Epx-Badge/main/Badges/';
 let C={icon:'colored',qual:'bgb',dv:'combo',hdr:'nodv',desc:'short'};
 
@@ -357,7 +364,10 @@ function upd(){
   const f=fmt();
   document.getElementById('on').value=f.n;
   document.getElementById('od').value=f.d;
+  
+  // 【修改确认 2】这里依旧指向您的 BetterFormatter 预设仓库路径（动态拼接各选项）
   const url='https://raw.githubusercontent.com/6otho/BetterFormatter/main/presets/'+C.icon+'-'+C.qual+'-'+C.dv+'-'+C.hdr+'.json';
+  
   document.getElementById('ou').value=url;
   // Show/hide AIOStreams section + update guide based on quality mode
   const needsAIOS=C.qual==='bgb'||C.qual==='pct';
