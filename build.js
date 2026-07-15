@@ -2,7 +2,7 @@
 // Tier patterns use TRaSH Guides release group standard (filename-based)
 // All lookahead patterns use ^ anchor for mutual exclusion
 const fs=require('fs'),path=require('path');
-const I='https://raw.githubusercontent.com/9mousaa/BetterFormatter/main/images/';
+const I='https://raw.githubusercontent.com/6otho/Epx-Badge/main/Badges/';
 
 const ST={
   best:{bc:'#FF00FF37',bg:'#E600E932',tc:'#27C04F'},
