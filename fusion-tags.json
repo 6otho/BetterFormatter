@@ -43,7 +43,7 @@
       "borderColor": "#FF858283",
       "groupId": "bf-resolution",
       "id": "bf-4k",
-      "imageURL": "https://raw.githubusercontent.com/9mousaa/BetterFormatter/main/images/4k.png",
+      "imageURL": "https://raw.githubusercontent.com/6otho/Epx-Badge/refs/heads/main/Badges/4k-4.png",
       "isEnabled": true,
       "name": "4K",
       "pattern": "(?i)^(?!.*\\b(?:1080[pi]?|720[pi]?|full[-\\s]?hd|fhd|hd1080|hd720)\\b).*?(?:\\b(bd|hd|m)?2160[pi]?\\b|\\b4k\\b|\\bu(ltra)?[ ._-]?hd\\b|\\b3840\\s?x\\s?\\d{4}\\b)",
