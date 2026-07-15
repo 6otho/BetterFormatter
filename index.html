@@ -1,8 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>BetterFormatter Configurator</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -44,9 +40,7 @@ h1{font-size:1.5rem;font-weight:800;margin-bottom:.2rem}
 .abtn:hover{background:#333;border-color:#444}
 #guide .note{font-size:.7rem;color:#999;margin-bottom:.8rem;line-height:1.5}
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#4ade80;padding:.5rem 1rem;border-radius:8px;font-size:.78rem;display:none;z-index:99;border:1px solid #2a2a2a}
-</style>
-</head>
-<body>
+</style></head><body>
 <div class="wrap">
 <h1>BetterFormatter</h1>
 <p class="sub">Configure your Fusion stream tags, preview, and export.</p>
@@ -119,7 +113,7 @@ h1{font-size:1.5rem;font-weight:800;margin-bottom:.2rem}
 <div class="toast" id="toast">Copied!</div>
 
 <script>
-// 【修改】图片前缀路径，已换成你的专属仓库
+// 【已适配】指向你的图片仓库目录
 const I='https://raw.githubusercontent.com/6otho/Epx-Badge/main/Badges/';
 let C={icon:'colored',qual:'bgb',dv:'combo',hdr:'nodv',desc:'short'};
 
@@ -188,13 +182,13 @@ function preview(){
     // 1b) SEADEX — right after quality
     if(s.seadex)h+=thtml(null,p+'-SeaDex.png',mono?ST.res:ST.best);
 
-    // 2) RESOLUTION
-    const ri=s.res==='4K'?'4k.png':s.res.toLowerCase()+'.png';
+    // 2) RESOLUTION 【已适配你的图标文件名】
+    const ri=s.res==='4K'?'4k-4.png':s.res==='1080p'?'1080p-1.png':s.res==='720p'?'720p-1.png':s.res.toLowerCase()+'.png';
     h+=thtml(null,ri,ST.res);
 
-    // 3) HDR
+    // 3) HDR 【已适配你的图标文件名】
     if(s.hdr&&(C.hdr==='always'||!s.dv)){
-      const hi=s.hdr==='HDR10+'?'HDR10Plus.png':s.hdr==='HDR10'?'HDR10.png':'HDR.png';
+      const hi=s.hdr==='HDR10+'?'HDR-10p.png':s.hdr==='HDR10'?'HDR10.png':'HDR.png';
       h+=thtml(null,hi,ST.res);
     }
 
@@ -202,38 +196,34 @@ function preview(){
     if(s.imax==='IMAX Enhanced')h+=thtml(null,'IMAX-enhanced.png',ST.res);
     else if(s.imax==='IMAX')h+=thtml(null,'IMAX.png',ST.res);
 
-    // 4) AUDIO + DV — combined shows ONE badge, separate shows individual
+    // 4) AUDIO + DV 【已适配你的图标文件名】
     const isDTS=s.aud&&s.aud.startsWith('dts');
     if(C.dv==='combo'){
-      // Combined: one badge for Dolby audio+DV
       if(s.dv&&!isDTS){
-        // DV + Dolby audio → single combined badge
         if(s.aud==='atmos')h+=thtml(null,'atmos-vision.png',ST.tr,true);
         else if(s.aud==='truehd')h+=thtml(null,'truehd-vision.png',ST.tr,true);
         else if(s.aud==='ddp')h+=thtml(null,'digitalplus-vision.png',ST.tr,true);
-        else if(s.aud==='dd')h+=thtml(null,'digital-vision.png',ST.tr,true);
-        else h+=thtml(null,'vision.png',ST.tr,true);
+        else if(s.aud==='dd')h+=thtml(null,'dolby-digital.png',ST.tr,true);
+        else h+=thtml(null,'dolby-vison.png',ST.tr,true);
       }else{
-        // No DV, or DV + DTS (no Dolby audio combo)
-        if(s.dv)h+=thtml(null,'vision.png',ST.tr,true);
+        if(s.dv)h+=thtml(null,'dolby-vison.png',ST.tr,true);
         if(s.aud==='atmos')h+=thtml(null,'atmos.png',ST.tr,true);
         else if(s.aud==='truehd')h+=thtml(null,'truehd.png',ST.tr,true);
         else if(s.aud==='ddp')h+=thtml(null,'digitalplus.png',ST.tr,true);
-        else if(s.aud==='dd')h+=thtml(null,'digital.png',ST.tr,true);
+        else if(s.aud==='dd')h+=thtml(null,'dolby-digital.png',ST.tr,true);
         else if(isDTS){h+=thtml(null,(s.aud==='dtsx'?'dtsx':s.aud==='dtshdma'?'dtshdma':s.aud==='dtshd'?'dtshd':'dts')+'.png',ST.res);}
       }
     }else{
-      // Separate: individual DV + individual audio
-      if(s.dv)h+=thtml(null,'vision.png',ST.tr,true);
+      if(s.dv)h+=thtml(null,'dolby-vison.png',ST.tr,true);
       if(s.aud==='atmos')h+=thtml(null,'atmos.png',ST.tr,true);
       else if(s.aud==='truehd')h+=thtml(null,'truehd.png',ST.tr,true);
       else if(s.aud==='ddp')h+=thtml(null,'digitalplus.png',ST.tr,true);
-      else if(s.aud==='dd')h+=thtml(null,'digital.png',ST.tr,true);
+      else if(s.aud==='dd')h+=thtml(null,'dolby-digital.png',ST.tr,true);
       else if(isDTS){h+=thtml(null,(s.aud==='dtsx'?'dtsx':s.aud==='dtshdma'?'dtshdma':s.aud==='dtshd'?'dtshd':'dts')+'.png',ST.res);}
     }
 
-    // 5) SURROUND
-    h+=thtml(null,s.ch==='7.1'?'7dot1.png':'5dot1.png',ST.tr);
+    // 5) SURROUND 【已适配你的图标文件名】
+    h+=thtml(null,s.ch==='7.1'?'7_1_audio.png':'5_1_audio.png',ST.tr);
 
     h+='</div></div>';
   }
@@ -249,7 +239,6 @@ function gen(){
   const p=C.icon,mono=p==='mono',T=[],G=[];
   const qs=k=>mono?ST.res:ST[k];
 
-  // Patterns
   const dvR='\\b(?:dv|dovi|dolby[\\s._-]?vision)\\b';
   const dvY='(?=.*(?i)'+dvR+')';
   const dvN='(?!.*(?i)'+dvR+')';
@@ -287,56 +276,51 @@ function gen(){
     T.push(mk('q-w','WebDL','(?i)(?:web[-_. ]?dl|webdl|webrip)',p+'-webdl.png',qs('best'),'gq'));
   }
 
-  // Resolution
-  T.push(mk('r4','4K','(?i)^(?!.*\\b(?:1080[pi]?|720[pi]?)\\b).*?(?:\\b2160[pi]?\\b|\\b4k\\b|\\buhd\\b)','4k.png',ST.res,'gr'));
-  T.push(mk('r1','1080p','(?i)\\b1080[pi]?\\b','1080p.png',ST.res,'gr'));
-  T.push(mk('r7','720p','(?i)\\b720[pi]?\\b','720p.png',ST.res,'gr'));
+  // Resolution 【JSON输出已适配你的图标文件名】
+  T.push(mk('r4','4K','(?i)^(?!.*\\b(?:1080[pi]?|720[pi]?)\\b).*?(?:\\b2160[pi]?\\b|\\b4k\\b|\\buhd\\b)','4k-4.png',ST.res,'gr'));
+  T.push(mk('r1','1080p','(?i)\\b1080[pi]?\\b','1080p-1.png',ST.res,'gr'));
+  T.push(mk('r7','720p','(?i)\\b720[pi]?\\b','720p-1.png',ST.res,'gr'));
 
-  // HDR (before audio in order)
+  // HDR 【JSON输出已适配你的图标文件名】
   const hp=C.hdr==='nodv'?dvN:'';
-  T.push(mk('h+','HDR10+',hp+'(?=.*(?i)hdr\\s*10\\s*(?:\\+|plus|p))','HDR10Plus.png',ST.res,'gv'));
-  T.push(mk('h1','HDR10',hp+'(?=.*(?i)hdr\\s*10)(?!.*(?i)hdr\\s*10\\s*(?:\\+|plus|p))','HDR10.png',ST.res,'gv'));
-  T.push(mk('hh','HDR',hp+'(?=.*(?i)\\bHDR\\b)(?!.*(?i)hdr\\s*10)','HDR.png',ST.res,'gv'));
+  T.push(mk('h+','HDR10+','hp+\'(?=.*(?i)hdr\\\\s*10\\\\s*(?:\\\\\\\\+|plus|p))\'','HDR-10p.png',ST.res,'gv'));
+  T.push(mk('h1','HDR10','hp+\'(?=.*(?i)hdr\\\\s*10)(?!.*(?i)hdr\\\\s*10\\\\s*(?:\\\\\\\\+|plus|p))\'','HDR10.png',ST.res,'gv'));
+  T.push(mk('hh','HDR','hp+\'(?=.*(?i)\\\\bHDR\\\\b)(?!.*(?i)hdr\\\\s*10)\'','HDR.png',ST.res,'gv'));
 
-  // Audio + DV
+  // Audio + DV 【JSON输出已适配你的图标文件名】
   if(C.dv==='combo'){
-    // Atmos (top priority) — catches both TrueHD Atmos and DD+ Atmos
     T.push(mk('a-at-dv','Atmos+DV','(?=.*'+atmosR+')'+dvY,'atmos-vision.png',ST.tr,'ga'));
     T.push(mk('a-at','Atmos','(?=.*'+atmosR+')'+dvN,'atmos.png',ST.tr,'ga'));
-    // TrueHD (no Atmos)
     T.push(mk('a-th-dv','TrueHD+DV','(?=.*'+thR+')(?!.*'+atmosR+')'+dvY,'truehd-vision.png',ST.tr,'ga'));
-    T.push(mk('a-th','TrueHD','(?=.*'+thR+')(?!.*'+atmosR+')'+dvN,'truehd.png',ST.tr,'ga'));
-    // DD+ (no Atmos, no TrueHD)
+    T.push(mk('a-th','TrueHD','(?=.*'+thR+')(?!.*'+atmosR+')(?!.*'+DV+')','truehd.png',ST.tr,'ga'));
     T.push(mk('a-dp-dv','DD+ DV','(?=.*'+ddpR+')(?!.*'+atmosR+')(?!.*'+thR+')'+dvY,'digitalplus-vision.png',ST.tr,'ga'));
-    T.push(mk('a-dp','DD+','(?=.*'+ddpR+')(?!.*'+atmosR+')(?!.*'+thR+')'+dvN,'digitalplus.png',ST.tr,'ga'));
-    // DD (no DD+, no TrueHD, no Atmos)
+    T.push(mk('a-dp','DD+','(?=.*'+ddpR+')(?!.*'+atmosR+')(?!.*'+thR+')(?!.*'+DV+')','digitalplus.png',ST.tr,'ga'));
     T.push(mk('a-dd-dv','DD DV','(?=.*'+ddR+')(?!.*'+ddpR+')(?!.*'+thR+')(?!.*'+atmosR+')'+dvY,'digital-vision.png',ST.tr,'ga'));
-    T.push(mk('a-dd','DD','(?=.*'+ddR+')(?!.*'+ddpR+')(?!.*'+thR+')(?!.*'+atmosR+')'+dvN,'digital.png',ST.tr,'ga'));
-    // DV standalone (DV + non-Dolby audio like DTS)
-    T.push(mk('a-dv','DV','(?=.*(?i)'+dvR+')(?!.*'+atmosR+')(?!.*'+thR+')(?!.*'+ddpR+')(?!.*'+ddR+')','vision.png',ST.tr,'gv'));
+    T.push(mk('a-dd','DD','(?=.*'+ddR+')(?!.*'+ddpR+')(?!.*'+thR+')(?!.*'+atmosR+')(?!.*'+DV+')','dolby-digital.png',ST.tr,'ga'));
+    T.push(mk('a-dv','DV','(?=.*(?i)'+dvR+')(?!.*'+atmosR+')(?!.*'+thR+')(?!.*'+ddpR+')(?!.*'+ddR+')','dolby-vison.png',ST.tr,'gv'));
   }else{
-    T.push(mk('a-dv','DV','(?i)'+dvR,'vision.png',ST.tr,'gv'));
+    T.push(mk('a-dv','DV','(?i)'+dvR,'dolby-vison.png',ST.tr,'gv'));
     T.push(mk('a-at','Atmos',atmosR,'atmos.png',ST.tr,'ga'));
     T.push(mk('a-th','TrueHD','(?=.*'+thR+')(?!.*'+atmosR+')','truehd.png',ST.tr,'ga'));
     T.push(mk('a-dp','DD+','(?=.*'+ddpR+')(?!.*'+atmosR+')(?!.*'+thR+')','digitalplus.png',ST.tr,'ga'));
-    T.push(mk('a-dd','DD','(?=.*'+ddR+')(?!.*'+ddpR+')(?!.*'+thR+')(?!.*'+atmosR+')','digital.png',ST.tr,'ga'));
+    T.push(mk('a-dd','DD','(?=.*'+ddR+')(?!.*'+ddpR+')(?!.*'+thR+')(?!.*'+atmosR+')','dolby-digital.png',ST.tr,'ga'));
   }
 
-  // DTS (always separate, resolution style)
+  // DTS
   T.push(mk('d-x','DTS:X','(?i)\\bdts[-_.: ]?x\\b','dtsx.png',ST.res,'ga'));
   T.push(mk('d-ma','DTS-HD MA','(?i)\\bdts[-_. ]?(?:hd[-_. ]?ma|ma|xll)\\b','dtshdma.png',ST.res,'ga'));
   T.push(mk('d-hd','DTS-HD','(?i)\\bdts[-_. ]?hd\\b(?![-_. ]?ma)','dtshd.png',ST.res,'ga'));
   T.push(mk('d-d','DTS','(?=.*(?i)\\bDTS\\b)(?!.*(?i)dts[-_. ]?(?:hd|ma|xll|x))','dts.png',ST.res,'ga'));
 
-  // Surround
-  T.push(mk('c7','7.1','(?i)[^0-9][7-8][ .][0-1]','7dot1.png',ST.tr,'gc'));
-  T.push(mk('c5','5.1','(?=.*(?i)[^0-9]5[ .][0-1])(?!.*(?i)[^0-9][7-8][ .][0-1])','5dot1.png',ST.tr,'gc'));
+  // Surround 【JSON输出已适配你的图标文件名】
+  T.push(mk('c7','7.1','(?i)[^0-9][7-8][ .][0-1]','7_1_audio.png',ST.tr,'gc'));
+  T.push(mk('c5','5.1','(?=.*(?i)[^0-9]5[ .][0-1])(?!.*(?i)[^0-9][7-8][ .][0-1])','5_1_audio.png',ST.tr,'gc'));
 
   // Languages
   const L=[['en','\ud83c\uddec\ud83c\udde7','(?i)\\benglish\\b|\\beng\\b'],['es','\ud83c\uddea\ud83c\uddf8','(?i)\\bspanish\\b|\\bspa\\b'],['fr','\ud83c\uddeb\ud83c\uddf7','(?i)\\bfrench\\b|\\bfra\\b'],['de','\ud83c\udde9\ud83c\uddea','(?i)\\bgerman\\b|\\bdeu\\b'],['it','\ud83c\uddee\ud83c\uddf9','(?i)\\bitalian\\b|\\bita\\b'],['pt','\ud83c\udde7\ud83c\uddf7','(?i)\\bportuguese\\b|\\bpor\\b'],['ja','\ud83c\uddef\ud83c\uddf5','(?i)\\bjapanese\\b|\\bjpn\\b'],['ko','\ud83c\uddf0\ud83c\uddf7','(?i)\\bkorean\\b|\\bkor\\b'],['zh','\ud83c\udde8\ud83c\uddf3','(?i)\\bchinese\\b|\\bchi\\b'],['hi','\ud83c\uddee\ud83c\uddf3','(?i)\\bhindi\\b|\\bhin\\b'],['ar','\ud83c\uddf8\ud83c\udde6','(?i)\\barabic\\b|\\bara\\b'],['ru','\ud83c\uddf7\ud83c\uddfa','(?i)\\brussian\\b|\\brus\\b'],['mu','\ud83c\udf10','(?i)\\bmulti\\b|\\bdual[\\s._-]?audio\\b']];
   for(const[c,f,pt] of L)T.push(mk('l-'+c,f,pt,'',ST.dim,'gl'));
 
-  // Groups (order = display order in Fusion)
+  // Groups
   if(C.qual==='pct')G.push({borderColor:'#00000000',color:'#27C04F',id:'gp',isExpanded:true,name:'Score'});
   G.push({borderColor:ST.best.bc,color:'#27C04F',id:'gq',isExpanded:true,name:'Quality'});
   G.push({borderColor:ST.res.bc,color:'#FFBE01',id:'gr',isExpanded:true,name:'Resolution'});
@@ -364,10 +348,7 @@ function upd(){
   const f=fmt();
   document.getElementById('on').value=f.n;
   document.getElementById('od').value=f.d;
-  
-  // 【修改确认 2】这里依旧指向您的 BetterFormatter 预设仓库路径（动态拼接各选项）
   const url='https://raw.githubusercontent.com/6otho/BetterFormatter/main/presets/'+C.icon+'-'+C.qual+'-'+C.dv+'-'+C.hdr+'.json';
-  
   document.getElementById('ou').value=url;
   // Show/hide AIOStreams section + update guide based on quality mode
   const needsAIOS=C.qual==='bgb'||C.qual==='pct';
