@@ -1,5 +1,5 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>BetterFormatter Configurator</title>
+<title>EplayerX TagStyler</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:system-ui,-apple-system,sans-serif;background:#0a0a0a;color:#fff;min-height:100vh}
@@ -42,7 +42,7 @@ h1{font-size:1.5rem;font-weight:800;margin-bottom:.2rem}
 .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#4ade80;padding:.5rem 1rem;border-radius:8px;font-size:.78rem;display:none;z-index:99;border:1px solid #2a2a2a}
 </style></head><body>
 <div class="wrap">
-<h1>BetterFormatter</h1>
+<h1>EplayerX TagStyler</h1>
 <p class="sub">Configure your Fusion stream tags, preview, and export.</p>
 
 <div class="sec"><h2>Icon Style</h2><div class="opts" data-g="icon">
@@ -172,7 +172,7 @@ function preview(){
     if(s.imax==='IMAX Enhanced')h+=thtml(null,'imax-e.svg',ST.res);
     else if(s.imax==='IMAX')h+=thtml(null,'imax.svg',ST.res);
 
-    // 4) AUDIO & VIDEO TECH (【已全面重构】采取并行判断，拒绝else-if相互排斥吞掉图标的逻辑，还原并排真实渲染)
+    // 4) AUDIO & VIDEO TECH (采取并行判断，拒绝else-if相互排斥吞掉图标的逻辑，还原并排真实渲染)
     const isDTS=s.aud&&s.aud.startsWith('dts');
     
     // a. Dolby Vision
@@ -221,6 +221,14 @@ function gen(){
   const p=C.icon,mono=p==='mono',T=[],G=[];
   const qs=k=>mono?ST.res:ST[k];
 
+  const dvR='\\b(?:dv|dovi|dolby[\\s._-]?vision)\\b';
+  const dvY='(?=.*(?i)'+dvR+')';
+  const dvN='(?!.*(?i)'+dvR+')';
+  const atmosR='(?i)\\batmos\\b';
+  const thR='(?i)true[\\s._-]?hd';
+  const ddpR='(?i)(?:dd[p+]|e[\\s._-]?ac[\\s._-]?3)';
+  const ddR='(?i)(?:dd[^p+a-z]|(?<!e-)ac-?3)';
+
   // 1) Source
   T.push(mk('s-uhdbd','Ultra HD Blu-ray','(?i)\\b(uhd|ultra[\\s._-]?hd)[\\s._-]*(blu[\\s._-]?ray|bluray|bd)\\b','u-hd-blu-ray.svg',ST.res,'gs'));
   T.push(mk('s-bluray','Blu-ray Disc','(?i)\\b(blu[\\s._-]?ray|bluray|bdrip|bdremux)\\b(?!.*(uhd|ultra[\\s._-]?hd))','blu-raydisc.svg',ST.res,'gs'));
@@ -238,7 +246,7 @@ function gen(){
   T.push(mk('h1','HDR10','hp+\'(?=.*(?i)hdr\\\\s*10)(?!.*(?i)hdr\\\\s*10\\\\s*(?:\\\\\\\\+|plus|p))\'','hdr10-x.svg',ST.res,'gv'));
   T.push(mk('hh','HDR','hp+\'(?=.*(?i)\\\\bHDR\\\\b)(?!.*(?i)hdr\\\\s*10)\'','hdr-x.svg',ST.res,'gv'));
 
-  // 4) Audio + DV (【已全面简化】移除原版合并逻辑，全部采用独立的 separate 分流规则解析)
+  // 4) Audio + DV
   T.push(mk('a-dv','DV','(?i)'+dvR,'dolby-vision-x.svg',ST.tr,'gv'));
   T.push(mk('a-at','Atmos',atmosR,'dolby-atmos-x.svg',ST.tr,'ga'));
   T.push(mk('a-th','TrueHD','(?i)^(?=.*'+thR+')(?!.*'+atmosR+')','true-hd-1.svg',ST.tr,'ga'));
@@ -284,7 +292,8 @@ function upd(){
   const f=fmt();
   document.getElementById('on').value=f.n;
   document.getElementById('od').value=f.d;
-  const url='https://raw.githubusercontent.com/6otho/BetterFormatter/main/presets/'+C.icon+'-'+C.hdr+'.json';
+  // 【已更新对接：EplayerX-TagStyler】
+  const url='https://raw.githubusercontent.com/6otho/EplayerX-TagStyler/main/presets/'+C.icon+'-'+C.hdr+'.json';
   document.getElementById('ou').value=url;
   
   // AIOStreams 轻量向导设置说明
