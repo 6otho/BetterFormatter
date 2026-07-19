@@ -1,4 +1,4 @@
-// Generates all 8 preset JSON files for Fusion import
+// Generates all 4 preset JSON files for Fusion import
 // Source patterns use custom Epx-Badge SVG mappings
 const fs=require('fs'),path=require('path');
 
@@ -23,7 +23,7 @@ const DD='\\b(?:dd[25][. ][01]|dd[^p+a-z]\\b|\\bac-?3)\\b';
 function gen(C){
   const T=[],G=[];
 
-  // 1) Your Custom Sources (取代了原本的 Quality 质量分级)
+  // 1) Source
   T.push(mk('s-uhdbd','Ultra HD Blu-ray','(?i)\\b(uhd|ultra[\\s._-]?hd)[\\s._-]*(blu[\\s._-]?ray|bluray|bd)\\b','u-hd-blu-ray.svg',ST.res,'gs'));
   T.push(mk('s-bluray','Blu-ray Disc','(?i)\\b(blu[\\s._-]?ray|bluray|bdrip|bdremux)\\b(?!.*(uhd|ultra[\\s._-]?hd))','blu-raydisc.svg',ST.res,'gs'));
   T.push(mk('s-hdtv','HDTV','(?i)\\bhdtv\\b','hdtv.svg',ST.res,'gs'));
@@ -49,31 +49,19 @@ function gen(C){
   T.push(mk('v-imax-e','IMAX Enhanced','(?i)\\bimax[\\s._-]?enhanced\\b','imax-e.svg',ST.res,'gv'));
   T.push(mk('v-imax','IMAX','(?i)^(?=.*\\bIMAX\\b)(?!.*enhanced)','imax.svg',ST.res,'gv'));
 
-  // 5) DV + Audio Combo
-  if(C.dv==='combo'){
-    T.push(mk('a-at-dv','Atmos+DV','(?i)^(?=.*'+ATMOS+')(?=.*'+DV+')','atmos-vision.png',ST.tr,'ga'));
-    T.push(mk('a-at','Atmos','(?i)^(?=.*'+ATMOS+')(?!.*'+DV+')','dolby-atmos-x.svg',ST.tr,'ga'));
-    T.push(mk('a-th-dv','TrueHD+DV','(?i)^(?=.*'+TH+')(?!.*'+ATMOS+')(?=.*'+DV+')','truehd-vision.png',ST.tr,'ga'));
-    T.push(mk('a-th','TrueHD','(?i)^(?=.*'+TH+')(?!.*'+ATMOS+')(?!.*'+DV+')','true-hd-1.svg',ST.tr,'ga'));
-    T.push(mk('a-dp-dv','DD++DV','(?i)^(?=.*'+DDP+')(?!.*'+ATMOS+')(?!.*'+TH+')(?=.*'+DV+')','digitalplus-vision.png',ST.tr,'ga'));
-    T.push(mk('a-dp','DD+','(?i)^(?=.*'+DDP+')(?!.*'+ATMOS+')(?!.*'+TH+')(?!.*'+DV+')','dolby-digitalplus-x.svg',ST.tr,'ga'));
-    T.push(mk('a-dd-dv','DD+DV','(?i)^(?=.*'+DD+')(?!.*'+DDP+')(?!.*'+TH+')(?!.*'+ATMOS+')(?=.*'+DV+')','digital-vision.png',ST.tr,'ga'));
-    T.push(mk('a-dd','DD','(?i)^(?=.*'+DD+')(?!.*'+DDP+')(?!.*'+TH+')(?!.*'+ATMOS+')(?!.*'+DV+')','dolby-digital-x.svg',ST.tr,'ga'));
-    T.push(mk('a-dv','DV','(?i)^(?=.*'+DV+')(?!.*'+ATMOS+')(?!.*'+TH+')(?!.*'+DDP+')(?!.*'+DD+')','dolby-vision-x.svg',ST.tr,'gv'));
-  }else{
-    T.push(mk('a-dv','DV','(?i)'+DV,'dolby-vision-x.svg',ST.tr,'gv'));
-    T.push(mk('a-at','Atmos','(?i)'+ATMOS,'dolby-atmos-x.svg',ST.tr,'ga'));
-    T.push(mk('a-th','TrueHD','(?i)^(?=.*'+TH+')(?!.*'+ATMOS+')','true-hd-1.svg',ST.tr,'ga'));
-    T.push(mk('a-dp','DD+','(?i)^(?=.*'+DDP+')(?!.*'+ATMOS+')(?!.*'+TH+')','dolby-digitalplus-x.svg',ST.tr,'ga'));
-    T.push(mk('a-dd','DD','(?i)^(?=.*'+DD+')(?!.*'+DDP+')(?!.*'+TH+')(?!.*'+ATMOS+')','dolby-digital-x.svg',ST.tr,'ga'));
-  }
+  // 5) Separate Audio & Video Tech (以完美的并排形式渲染)
+  T.push(mk('a-dv','DV','(?i)'+DV,'dolby-vision-x.svg',ST.tr,'gv'));
+  T.push(mk('a-at','Atmos','(?i)'+ATMOS,'dolby-atmos-x.svg',ST.tr,'ga'));
+  T.push(mk('a-th','TrueHD','(?i)^(?=.*'+TH+')(?!.*'+ATMOS+')','true-hd-1.svg',ST.tr,'ga'));
+  T.push(mk('a-dp','DD+','(?i)^(?=.*'+DDP+')(?!.*'+ATMOS+')(?!.*'+TH+')','dolby-digitalplus-x.svg',ST.tr,'ga'));
+  T.push(mk('a-dd','DD','(?i)^(?=.*'+DD+')(?!.*'+DDP+')(?!.*'+TH+')(?!.*'+ATMOS+')','dolby-digital-x.svg',ST.tr,'ga'));
 
   // 6) Channels
   T.push(mk('ch-71','7.1','[^0-9][7-8][. ][01](?![0-9])','7.1-6.svg',ST.tr,'gc'));
   T.push(mk('ch-51','5.1','^(?=.*[^0-9]5[. ][01](?![0-9]))(?!.*[^0-9][7-8][. ][01](?![0-9]))','5.1-6.svg',ST.tr,'gc'));
 
   // 7) Languages
-  const L=[['en','\ud83c\uddec\ud83c\udde7','(?i)\\benglish\\b|\\beng\\b'],['es','\ud83c\uddea\ud83c\uddf8','(?i)\\bspanish\\b|\\bspa\\b'],['fr','\ud83c\uddeb\ud83c\uddf7','(?i)\\bfrench\\b|\\bfra\\b|\\bfr\\b|\\bvff\\b|\\bvfq\\b'],['de','\ud83c\udde9\ud83c\uddea','(?i)\\bgerman\\b|\\bdeu\\b'],['it','\ud83c\uddee\ud83c\uddf9','(?i)\\bitalian\\b|\\bita\\b'],['pt','\ud83c\udde7\ud83c\uddf7','(?i)\\bportuguese\\b|\\bpor\\b'],['ja','\ud83c\uddef\ud83c\uddf5','(?i)\\bjapanese\\b|\\bjpn\\b|[\u3040-\u309F\u30A0-\u30FF]{3,}'],['ko','\ud83c\uddf0\ud83c\uddf7','(?i)\\bkorean\\b|\\bkor\\b|[\uAC00-\uD7AF]{3,}'],['zh','\ud83c\udde8\ud83c\uddf3','(?i)\\bchinese\\b|\\bchi\\b|[\u4E00-\u9FFF]{3,}'],['hi','\ud83c\uddee\ud83c\uddf3','(?i)\\bhindi\\b|\\bhin\\b|[\u0900-\u097F]{3,}'],['ar','\ud83c\uddf8\ud83c\udde6','(?i)\\barabic\\b|\\bara\\b|[\u0600-\u06FF]{3,}'],['ru','\ud83c\uddf7\ud83c\uddfa','(?i)\\brussian\\b|\\brus\\b|[\u0400-\u04FF]{3,}'],['mu','\ud83c\udf10','(?i)\\bmulti\\b|\\bdual[\\s._-]?audio\\b']];
+  const L=[['en','\ud83c\uddec\ud83c\udde7','(?i)\\benglish\\b|\\beng\\b'],['es','\ud83c\uddea\ud83c\uddf8','(?i)\\bspanish\\b|\\bspa\\b'],['fr','\ud83c\uddeb\ud83c\uddf7','(?i)\\bfrench\\b|\\bfra\\b|\\bfr\\b|\\bvff\\b|\\bvfq\\b'],['de','\ud83c\udde9\ud83c\uddea','(?i)\\bgerman\\b|\\bdeu\\b'],['it','\ud83c\uddee\ud83c\uddf9','(?i)\\bitalian\\b|\\bita\\b'],['pt','\ud83c\udde7\ud83c\uddf7','(?i)\\bportuguese\\b|\\bpor\\b'],['ja','\ud83c\uddef\ud83c\uddf5','(?i)\\bjapanese\\b|\\bjpn\\b|[\u3040-\u309F\u30A0-\u30FF]{3,}'],['ko','\ud83c\uddf0\ud83c\uddf7','(?i)\\bkorean\\b|\\bkor\\b|[\uAC00-\uD7AF]{3,}'],['zh','\ud83c\udde8\ud83c\uddf3','(?i)\\bchinese\\b|\\bchi\\b|[\u4E00-\u9FFF]{3,}'],['hi','\ud83c\uddee\ud83c\uddf3','(?i)\\bhindi\\b|\\bhin\\b|[\u0900-\u097F]{3,}'],['ar','\ud83c\uddf8\ud83c\dde6','(?i)\\barabic\\b|\\bara\\b|[\u0600-\u06FF]{3,}'],['ru','\ud83c\uddf7\ud83c\uddfa','(?i)\\brussian\\b|\\brus\\b|[\u0400-\u04FF]{3,}'],['mu','\ud83c\udf10','(?i)\\bmulti\\b|\\bdual[\\s._-]?audio\\b']];
   for(const[c,f,pt] of L)T.push(mk('l-'+c,f,pt,'',ST.dim,'gl'));
 
   G.push({borderColor:'#00000000',color:'#27C04F',id:'gs',isExpanded:true,name:'Source'});
@@ -90,13 +78,11 @@ const dir=path.join(__dirname,'presets');
 fs.mkdirSync(dir,{recursive:true});
 let count=0;
 for(const icon of['colored','mono']){
-  for(const dv of['combo','sep']){
-    for(const hdr of['nodv','always']){
-      const data=gen({icon,dv,hdr});
-      const name=`${icon}-${dv}-${hdr}.json`;
-      fs.writeFileSync(path.join(dir,name),JSON.stringify(data,null,2));
-      count++;
-    }
+  for(const hdr of['nodv','always']){
+    const data=gen({icon,hdr});
+    const name=`${icon}-${hdr}.json`;
+    fs.writeFileSync(path.join(dir,name),JSON.stringify(data,null,2));
+    count++;
   }
 }
 console.log(`Generated ${count} presets.`);
