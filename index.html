@@ -66,6 +66,7 @@ h1{font-size:1.5rem;font-weight:800;margin-bottom:.2rem}
 <h2 class="oph">Setup Guide</h2>
 <div id="guide"></div>
 
+<!-- 将 JSON 文本域保留以供 JavaScript 提取 -->
 <div style="display:none"><textarea id="ou" readonly></textarea><textarea id="oj" readonly></textarea></div>
 
 <h2 class="oph" style="margin-top:1.5rem">Setup</h2>
@@ -86,7 +87,11 @@ h1{font-size:1.5rem;font-weight:800;margin-bottom:.2rem}
 <div class="gc">
 <div class="gt">Fusion Filters</div>
 <div class="gd">Fusion → Settings → Filters → Import Filters → paste URL</div>
-<button class="cbtn" style="margin-top:.45rem" onclick="cc('ou')">Copy Import URL</button>
+<!-- 【已更新布局】新增复制原始 JSON 功能，一键直连根目录 fusion-tags.json 文件 -->
+<div style="display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.45rem;width:100%">
+  <button class="abtn" style="flex:1;min-width:180px" onclick="cc('oj')">Copy Filters JSON (Paste to GitHub)</button>
+  <button class="cbtn" style="flex:1.2;min-width:180px" onclick="cc('ou')">Copy Import URL</button>
+</div>
 </div></div>
 </div>
 <div class="toast" id="toast">Copied!</div>
@@ -172,7 +177,7 @@ function preview(){
     if(s.imax==='IMAX Enhanced')h+=thtml(null,'imax-e.svg',ST.res);
     else if(s.imax==='IMAX')h+=thtml(null,'imax.svg',ST.res);
 
-    // 4) AUDIO & VIDEO TECH (采取并行判断，拒绝else-if相互排斥吞掉图标的逻辑，还原并排真实渲染)
+    // 4) AUDIO & VIDEO TECH (采取并行判断，并排渲染)
     const isDTS=s.aud&&s.aud.startsWith('dts');
     
     // a. Dolby Vision
@@ -292,8 +297,8 @@ function upd(){
   const f=fmt();
   document.getElementById('on').value=f.n;
   document.getElementById('od').value=f.d;
-  // 【已更新对接：EplayerX-TagStyler】
-  const url='https://raw.githubusercontent.com/6otho/EplayerX-TagStyler/main/presets/'+C.icon+'-'+C.hdr+'.json';
+  // 【直连静态路径】锁定并直接指向您仓库根目录下的 fusion-tags.json 文件
+  const url='https://raw.githubusercontent.com/6otho/EplayerX-TagStyler/main/fusion-tags.json';
   document.getElementById('ou').value=url;
   
   // AIOStreams 轻量向导设置说明
