@@ -50,12 +50,7 @@ h1{font-size:1.5rem;font-weight:800;margin-bottom:.2rem}
 <div class="o" data-v="mono">Mono</div>
 </div></div>
 
-<div class="sec"><h2>Quality System</h2><div class="opts" data-g="qual">
-<div class="o on" data-v="bgb">Best / Good / OK</div>
-<div class="o" data-v="tier">Tiers (T1/T2/T3)</div>
-<div class="o" data-v="src">Source Label Only</div>
-<div class="o" data-v="pct">Percentages</div>
-</div></div>
+<!-- 【质量分级选择菜单已彻底移除】 -->
 
 <div class="sec"><h2>Dolby Vision + Audio</h2><div class="opts" data-g="dv">
 <div class="o on" data-v="combo">Combined Badge</div>
@@ -81,19 +76,11 @@ h1{font-size:1.5rem;font-weight:800;margin-bottom:.2rem}
 <div style="display:none"><textarea id="ou" readonly></textarea><textarea id="oj" readonly></textarea></div>
 
 <h2 class="oph" style="margin-top:1.5rem">Setup</h2>
-<div id="guide"></div>
 
+<!-- 【已精简为全新的纯源匹配 2 步轻量安装】 -->
 <div id="aios-section">
 <div class="gs">
 <div class="gn">1</div>
-<div class="gc">
-<div class="gt">Scoring Template</div>
-<div class="gd">AIOStreams → Featured Templates → <b>Tamtaro Complete SEL Setup</b> → Load Template → follow the wizard</div>
-<div class="gd sub">Overrides filters and sorting only · Nightly required</div>
-</div></div>
-
-<div class="gs">
-<div class="gn">2</div>
 <div class="gc">
 <div class="gt">Formatter</div>
 <div class="gd">AIOStreams → Formatter → Custom → replace both fields → Save</div>
@@ -103,7 +90,7 @@ h1{font-size:1.5rem;font-weight:800;margin-bottom:.2rem}
 </div>
 
 <div class="gs">
-<div class="gn" id="step-fusion-n">3</div>
+<div class="gn">2</div>
 <div class="gc">
 <div class="gt">Fusion Filters</div>
 <div class="gd">Fusion → Settings → Filters → Import Filters → paste URL</div>
@@ -113,14 +100,17 @@ h1{font-size:1.5rem;font-weight:800;margin-bottom:.2rem}
 <div class="toast" id="toast">Copied!</div>
 
 <script>
-// 【已修正】指向您的专属 jsDelivr CDN 直链路径，解决浏览器 MIME 拦截
-const I='https://cdn.jsdelivr.net/gh/6otho/Epx-Badge@main/Badges/';
-let C={icon:'colored',qual:'bgb',dv:'combo',hdr:'nodv',desc:'short'};
+// 【已全量适配】直接使用您的专属 SVG 徽章库，彻底解除第三方 PNG 的调用
+const I_EPX='https://cdn.jsdelivr.net/gh/6otho/Epx-Badge@main/Badges/';
+
+function getBadgeUrl(img) {
+  if (!img) return '';
+  return I_EPX + img;
+}
+
+let C={icon:'colored',dv:'combo',hdr:'nodv',desc:'short'};
 
 const ST={
-  best:{bc:'#FF00FF37',bg:'#E600E932',tc:'#27C04F'},
-  good:{bc:'#FF2D9943',bg:'#3300E932',tc:'#27C04F'},
-  bad:{bc:'#FF9D613D',bg:'#33FF7728',tc:'#FF6904'},
   res:{bc:'#FF858283',bg:'#33FFFFFF',tc:'#FFFFFF'},
   tr:{bc:'#00000000',bg:'#00000000',tc:'#FFFFFF'},
   dim:{bc:'#00000000',bg:'#00000000',tc:'#80FFFFFF'},
@@ -148,14 +138,11 @@ function rgba(c){
 function thtml(label,img,st,lg){
   const s='border-color:'+rgba(st.bc)+';background:'+rgba(st.bg)+';color:'+rgba(st.tc);
   const cls='tg'+(lg?' lg':'');
-  if(img)return'<span class="'+cls+'" style="'+s+'"><img src="'+I+img+'"></span>';
+  if(img)return'<span class="'+cls+'" style="'+s+'"><img src="'+getBadgeUrl(img)+'"></span>';
   return'<span class="'+cls+'" style="'+s+'">'+label+'</span>';
 }
 
 function fmtName(s){
-  const sym={best:'\u265b ',good:'\u2b51 ',ok:'\u25b3 '};
-  if(C.qual==='bgb') return (sym[s.q]||'')+s.qual;
-  if(C.qual==='pct') return s.pct+'% '+s.qual;
   return s.qual;
 }
 
@@ -166,37 +153,34 @@ function preview(){
     const st=(s.type||'debrid');const stCap=st==='p2p'?'P2P':st[0].toUpperCase()+st.slice(1);const descTxt=C.desc==='fn'?s.fn:s.fn+'\n'+(s.svc||'RD')+' \xb7 '+stCap+' \xb7 '+s.size;
     h+='<div class="cd"><div class="cn">'+fmtName(s)+'</div><div class="cs">'+descTxt+'</div><div class="tr">';
 
-    // 1) QUALITY
-    if(C.qual==='bgb'){
-      const qst=s.q==='ok'?ST.res:(mono?ST.res:ST[s.q]);
-      const img=s.q==='ok'?'mono-ok-'+s.src+'.png':p+'-'+s.q+'-'+s.src+'.png';
-      h+=thtml(null,img,qst);
-    }else if(C.qual==='tier'){
-      h+=thtml(null,p+'-icon-'+s.src+'-'+s.tier+'.png',mono?ST.res:ST.best);
-    }else if(C.qual==='src'){
-      h+=thtml(null,p+'-'+s.src+'.png',mono?ST.res:ST.best);
-    }else{
-      h+=thtml(s.pct+'%',null,mono?ST.res:pctS(s.pct));
+    // 1) SOURCE (解析您仓库对应的 4 种来源)
+    if(s.src==='remux' || s.src==='bluray'){
+      if(s.fn.toLowerCase().includes('uhd') || s.fn.toLowerCase().includes('2160p')){
+        h+=thtml(null,'u-hd-blu-ray.svg',ST.res);
+      } else {
+        h+=thtml(null,'blu-raydisc.svg',ST.res);
+      }
+    } else if(s.src==='hdtv') {
+      h+=thtml(null,'hdtv.svg',ST.res);
+    } else if(s.src==='dvd') {
+      h+=thtml(null,'dvd.svg',ST.res);
     }
 
-    // 1b) SEADEX — right after quality
-    if(s.seadex)h+=thtml(null,p+'-SeaDex.png',mono?ST.res:ST.best);
-
-    // 2) RESOLUTION 【已修正：对齐你的自定义 SVG 文件名】
+    // 2) RESOLUTION
     const ri=s.res==='4K'?'4Kx-1.svg':s.res==='1080p'?'1080p-a.svg':s.res==='720p'?'720p-b.svg':s.res.toLowerCase()+'.png';
     h+=thtml(null,ri,ST.res);
 
-    // 3) HDR 【已修正：对齐你的自定义 SVG 文件名】
+    // 3) HDR
     if(s.hdr&&(C.hdr==='always'||!s.dv)){
       const hi=s.hdr==='HDR10+'?'hdr10p-xx.svg':s.hdr==='HDR10'?'hdr10-x.svg':'hdr-x.svg';
       h+=thtml(null,hi,ST.res);
     }
 
-    // 3b) IMAX 【已修正：对齐你的自定义 SVG 文件名】
+    // 3b) IMAX
     if(s.imax==='IMAX Enhanced')h+=thtml(null,'imax-e.svg',ST.res);
     else if(s.imax==='IMAX')h+=thtml(null,'imax.svg',ST.res);
 
-    // 4) AUDIO + DV 【已修正：对齐你的自定义 SVG/PNG 文件名】
+    // 4) AUDIO + DV
     const isDTS=s.aud&&s.aud.startsWith('dts');
     if(C.dv==='combo'){
       if(s.dv&&!isDTS){
@@ -222,7 +206,7 @@ function preview(){
       else if(isDTS){h+=thtml(null,(s.aud==='dtsx'?'dts-x.svg':s.aud==='dtshdma'?'dts-hd-ma.svg':s.aud==='dtshd'?'dts-hd.svg':'dts.svg'),ST.res);}
     }
 
-    // 5) SURROUND 【已修正：对齐你的自定义 SVG 文件名】
+    // 5) SURROUND
     h+=thtml(null,s.ch==='7.1'?'7.1-6.svg':'5.1-6.svg',ST.tr);
 
     h+='</div></div>';
@@ -232,8 +216,7 @@ function preview(){
 
 // --- JSON Generation ---
 function mk(id,name,pat,img,st,gid){
-  // 【已修正】将网页本地生成的 tagStyle 也改为 "filled"，彻底绝缘 Nuvio 渲染崩溃 bug
-  return{borderColor:st.bc,groupId:gid,id:id,imageURL:img?I+img:'',isEnabled:true,name:name,pattern:pat,tagColor:st.bg,tagStyle:'filled',textColor:st.tc,type:'filter'};
+  return{borderColor:st.bc,groupId:gid,id:id,imageURL:getBadgeUrl(img),isEnabled:true,name:name,pattern:pat,tagColor:st.bg,tagStyle:'filled',textColor:st.tc,type:'filter'};
 }
 
 function gen(){
@@ -248,47 +231,24 @@ function gen(){
   const ddpR='(?i)(?:dd[p+]|e[\\s._-]?ac[\\s._-]?3)';
   const ddR='(?i)(?:dd[^p+a-z]|(?<!e-)ac-?3)';
 
-  // Quality
-  if(C.qual==='bgb'){
-    T.push(mk('q-br','Best Remux','(?=.*\u265b)(?=.*(?i)remux)',p+'-best-remux.png',qs('best'),'gq'));
-    T.push(mk('q-bb','Best BluRay','(?=.*\u265b)(?=.*(?i)(?:bluray|blu-ray))(?!.*(?i)remux)',p+'-best-bluray.png',qs('best'),'gq'));
-    T.push(mk('q-bw','Best WebDL','(?=.*\u265b)(?=.*(?i)(?:web[-_. ]?dl|webdl|webrip))',p+'-best-webdl.png',qs('best'),'gq'));
-    T.push(mk('q-gr','Good Remux','(?=.*[\u2b51\u2726])(?=.*(?i)remux)',p+'-good-remux.png',qs('good'),'gq'));
-    T.push(mk('q-gb','Good BluRay','(?=.*[\u2b51\u2726])(?=.*(?i)(?:bluray|blu-ray))(?!.*(?i)remux)',p+'-good-bluray.png',qs('good'),'gq'));
-    T.push(mk('q-gw','Good WebDL','(?=.*[\u2b51\u2726])(?=.*(?i)(?:web[-_. ]?dl|webdl|webrip))',p+'-good-webdl.png',qs('good'),'gq'));
-    T.push(mk('q-bad','Bad','[\u25b3\u2205]',p+'-Bad.png',qs('bad'),'gq'));
-  }else if(C.qual==='tier'){
-    const subs=['\u2081','\u2082','\u2083'];
-    const srcs=[['remux','Remux','\u0280\u1d07\u1d0d\u1d1c\u0445'],['bluray','Bluray','\u0299\u029f\u1d1c\u0280\u1d00\u028f'],['webdl','WEB','\u1d21\u1d07\u0299']];
-    for(let i=0;i<3;i++){
-      const tn='T'+(i+1);
-      for(const[k,l,sc] of srcs){
-        T.push(mk('q-'+k+'-t'+(i+1),l+' '+tn,'(?:\\b'+l+' '+tn+'\\b|'+sc+' \u1d1b'+subs[i]+')',p+'-icon-'+k+'-t'+(i+1)+'.png',qs('best'),'gq'));
-      }
-    }
-  }else if(C.qual==='src'){
-    T.push(mk('q-r','Remux','(?i)remux',p+'-remux.png',qs('best'),'gq'));
-    T.push(mk('q-b','BluRay','(?=.*(?i)(?:bluray|blu-ray))(?!.*(?i)remux)',p+'-bluray.png',qs('best'),'gq'));
-    T.push(mk('q-w','WebDL','(?i)(?:web[-_. ]?dl|webdl|webrip)',p+'-webdl.png',qs('best'),'gq'));
-  }else{
-    for(let i=100;i>=1;i--)T.push(mk('p'+i,i+'%','\\b'+i+'%','',mono?ST.res:pctS(i),'gp'));
-    T.push(mk('q-r','Remux','(?i)remux',p+'-remux.png',qs('best'),'gq'));
-    T.push(mk('q-b','BluRay','(?=.*(?i)(?:bluray|blu-ray))(?!.*(?i)remux)',p+'-bluray.png',qs('best'),'gq'));
-    T.push(mk('q-w','WebDL','(?i)(?:web[-_. ]?dl|webdl|webrip)',p+'-webdl.png',qs('best'),'gq'));
-  }
+  // 1) Source
+  T.push(mk('s-uhdbd','Ultra HD Blu-ray','(?i)\\b(uhd|ultra[\\s._-]?hd)[\\s._-]*(blu[\\s._-]?ray|bluray|bd)\\b','u-hd-blu-ray.svg',ST.res,'gs'));
+  T.push(mk('s-bluray','Blu-ray Disc','(?i)\\b(blu[\\s._-]?ray|bluray|bdrip|bdremux)\\b(?!.*(uhd|ultra[\\s._-]?hd))','blu-raydisc.svg',ST.res,'gs'));
+  T.push(mk('s-hdtv','HDTV','(?i)\\bhdtv\\b','hdtv.svg',ST.res,'gs'));
+  T.push(mk('s-dvd','DVD RIP','(?i)\\b(dvd[\\s._-]?rip|dvdrip)\\b','dvd.svg',ST.res,'gs'));
 
-  // Resolution 【已修正：对齐你的自定义 SVG 文件名】
+  // 2) Resolution
   T.push(mk('r4','4K','(?i)^(?!.*\\b(?:1080[pi]?|720[pi]?)\\b).*?(?:\\b2160[pi]?\\b|\\b4k\\b|\\buhd\\b)','4Kx-1.svg',ST.res,'gr'));
   T.push(mk('r1','1080p','(?i)\\b1080[pi]?\\b','1080p-a.svg',ST.res,'gr'));
   T.push(mk('r7','720p','(?i)\\b720[pi]?\\b','720p-b.svg',ST.res,'gr'));
 
-  // HDR 【已修正：对齐你的自定义 SVG 文件名】
+  // 3) HDR
   const hp=C.hdr==='nodv'?dvN:'';
   T.push(mk('h+','HDR10+','hp+\'(?=.*(?i)hdr\\\\s*10\\\\s*(?:\\\\\\\\+|plus|p))\'','hdr10p-xx.svg',ST.res,'gv'));
   T.push(mk('h1','HDR10','hp+\'(?=.*(?i)hdr\\\\s*10)(?!.*(?i)hdr\\\\s*10\\\\s*(?:\\\\\\\\+|plus|p))\'','hdr10-x.svg',ST.res,'gv'));
   T.push(mk('hh','HDR','hp+\'(?=.*(?i)\\\\bHDR\\\\b)(?!.*(?i)hdr\\\\s*10)\'','hdr-x.svg',ST.res,'gv'));
 
-  // Audio + DV 【已修正：对齐你的自定义 SVG/PNG 文件名】
+  // 4) Audio + DV
   if(C.dv==='combo'){
     T.push(mk('a-at-dv','Atmos+DV','(?=.*'+atmosR+')'+dvY,'atmos-vision.png',ST.tr,'ga'));
     T.push(mk('a-at','Atmos','(?=.*'+atmosR+')'+dvN,'dolby-atmos-x.svg',ST.tr,'ga'));
@@ -307,23 +267,22 @@ function gen(){
     T.push(mk('a-dd','DD','(?=.*'+ddR+')(?!.*'+ddpR+')(?!.*'+thR+')(?!.*'+atmosR+')','dolby-digital-x.svg',ST.tr,'ga'));
   }
 
-  // DTS 【已修正：对齐你的自定义 SVG 文件名】
+  // 5) DTS
   T.push(mk('d-x','DTS:X','(?i)\\bdts[-_.: ]?x\\b','dts-x.svg',ST.res,'ga'));
   T.push(mk('d-ma','DTS-HD MA','(?i)\\bdts[-_. ]?(?:hd[-_. ]?ma|ma|xll)\\b','dts-hd-ma.svg',ST.res,'ga'));
   T.push(mk('d-hd','DTS-HD','(?i)\\bdts[-_. ]?hd\\b(?![-_. ]?ma)','dts-hd.svg',ST.res,'ga'));
   T.push(mk('d-d','DTS','(?=.*(?i)\\bDTS\\b)(?!.*(?i)dts[-_. ]?(?:hd|ma|xll|x))','dts.svg',ST.res,'ga'));
 
-  // Surround 【已修正：对齐你的自定义 SVG 文件名】
+  // 6) Surround
   T.push(mk('c7','7.1','(?i)[^0-9][7-8][ .][0-1]','7.1-6.svg',ST.tr,'gc'));
   T.push(mk('c5','5.1','(?=.*(?i)[^0-9]5[ .][0-1])(?!.*(?i)[^0-9][7-8][ .][0-1])','5.1-6.svg',ST.tr,'gc'));
 
-  // Languages
-  const L=[['en','\ud83c\uddec\ud83c\udde7','(?i)\\benglish\\b|\\beng\\b'],['es','\ud83c\uddea\ud83c\uddf8','(?i)\\bspanish\\b|\\bspa\\b'],['fr','\ud83c\uddeb\ud83c\uddf7','(?i)\\bfrench\\b|\\bfra\\b'],['de','\ud83c\udde9\ud83c\uddea','(?i)\\bgerman\\b|\\bdeu\\b'],['it','\ud83c\uddee\ud83c\uddf9','(?i)\\bitalian\\b|\\bita\\b'],['pt','\ud83c\udde7\ud83c\uddf7','(?i)\\bportuguese\\b|\\bpor\\b'],['ja','\ud83c\uddef\ud83c\uddf5','(?i)\\bjapanese\\b|\\bjpn\\b'],['ko','\ud83c\uddf0\ud83c\uddf7','(?i)\\bkorean\\b|\\bkor\\b'],['zh','\ud83c\udde8\ud83c\uddf3','(?i)\\bchinese\\b|\\bchi\\b'],['hi','\ud83c\uddee\ud83c\uddf3','(?i)\\bhindi\\b|\\bhin\\b'],['ar','\ud83c\uddf8\ud83c\udde6','(?i)\\barabic\\b|\\bara\\b'],['ru','\ud83c\uddf7\ud83c\uddfa','(?i)\\brussian\\b|\\brus\\b'],['mu','\ud83c\udf10','(?i)\\bmulti\\b|\\bdual[\\s._-]?audio\\b']];
+  // 7) Languages
+  const L=[['en','\ud83c\uddec\ud83c\udde7','(?i)\\benglish\\b|\\beng\\b'],['es','\ud83c\uddea\ud83c\uddf8','(?i)\\bspanish\\b|\\bspa\\b'],['fr','\ud83c\uddeb\ud83c\uddf7','(?i)\\bfrench\\b|\\bfra\\b'],['de','\ud83c\udde9\ud83c\uddea','(?i)\\bgerman\\b|\\bdeu\\b'],['it','\ud83c\uddee\ud83c\uddf9','(?i)\\bitalian\\b|\\bita\\b'],['pt','\ud83c\udde7\ud83c\uddf7','(?i)\\bportuguese\\b|\\bpor\\b'],['ja','\ud83c\uddef\ud83c\uddf5','(?i)\\bjapanese\\b|\\bjpn\\b'],['ko','\ud83c\uddf0\ud83c\uddf7','(?i)\\bkorean\\b|\\bkor\\b'],['zh','\ud83c\udde8\ud83c\uddf3','(?i)\\bchinese\\b|\\bchi\\b'],['hi','\ud83c\uddee\ud83c\uddf3','(?i)\\bhindi\\b|\\bhin\\b'],['ar','\ud83c\uddf8\ud83c\dde6','(?i)\\barabic\\b|\\bara\\b'],['ru','\ud83c\uddf7\ud83c\uddfa','(?i)\\brussian\\b|\\brus\\b'],['mu','\ud83c\udf10','(?i)\\bmulti\\b|\\bdual[\\s._-]?audio\\b']];
   for(const[c,f,pt] of L)T.push(mk('l-'+c,f,pt,'',ST.dim,'gl'));
 
   // Groups
-  if(C.qual==='pct')G.push({borderColor:'#00000000',color:'#27C04F',id:'gp',isExpanded:true,name:'Score'});
-  G.push({borderColor:ST.best.bc,color:'#27C04F',id:'gq',isExpanded:true,name:'Quality'});
+  G.push({borderColor:'#00000000',color:'#27C04F',id:'gs',isExpanded:true,name:'Source'});
   G.push({borderColor:ST.res.bc,color:'#FFBE01',id:'gr',isExpanded:true,name:'Resolution'});
   G.push({borderColor:ST.res.bc,color:'#FF6B6B',id:'gv',isExpanded:true,name:'Visual'});
   G.push({borderColor:'#00000000',color:'#45B7D1',id:'ga',isExpanded:true,name:'Audio'});
@@ -337,8 +296,7 @@ function fmt(){
   const d=C.desc==='fn'
     ?'{stream.filename::exists["{stream.filename}"||""]}'
     :'{stream.filename::exists["{stream.filename}"||""]}\\n{service.shortName::exists["{service.shortName}"||""]}{stream.type::exists[" \xb7 {stream.type::title::replace(\'P2p\',\'P2P\')}"||""]}{stream.size::>0[" \xb7 {stream.size::bytes}"||""]}';
-  if(C.qual==='pct')return{n:'{stream.nSeScore::exists["{stream.nSeScore}% "||""]}{stream.quality::exists["{stream.quality::title}"||""]}',d};
-  if(C.qual==='bgb')return{n:"{stream.nSeScore::exists[\"{stream.nSeScore::pstar::replace('\u2bea','\u2605')::replace('\u2605\u2605\u2605\u2605\u2605','\u265b ')::replace('\u2605\u2605\u2605\u2605\u2606','\u2b51 ')::replace('\u2605\u2605\u2605\u2606\u2606','\u2726 ')::replace('\u2605\u2605\u2606\u2606\u2606','\u25b3 ')::replace('\u2605\u2606\u2606\u2606\u2606','\u2205 ')::replace('\u2606\u2606\u2606\u2606\u2606','\u2205 ')}\"||\"\"]}"+'{stream.quality::exists["{stream.quality::title}"||""]}',d};
+  // 简化格式化器（不再需要皇冠、星级打分逻辑）
   return{n:'{stream.quality::exists["{stream.quality::title}"||""]}',d};
 }
 
@@ -349,18 +307,12 @@ function upd(){
   const f=fmt();
   document.getElementById('on').value=f.n;
   document.getElementById('od').value=f.d;
-  const url='https://raw.githubusercontent.com/6otho/BetterFormatter/main/presets/'+C.icon+'-'+C.qual+'-'+C.dv+'-'+C.hdr+'.json';
+  const url='https://raw.githubusercontent.com/6otho/BetterFormatter/main/presets/'+C.icon+'-'+C.dv+'-'+C.hdr+'.json';
   document.getElementById('ou').value=url;
-  // Show/hide AIOStreams section + update guide based on quality mode
-  const needsAIOS=C.qual==='bgb'||C.qual==='pct';
-  document.getElementById('aios-section').style.display=needsAIOS?'':'none';
-  document.getElementById('step-fusion-n').textContent=needsAIOS?'3':'1';
+  
+  // AIOStreams 轻量向导设置说明
   const g=document.getElementById('guide');
-  if(needsAIOS){
-    g.innerHTML='<div class="note">Your selection (<b>'+(C.qual==='bgb'?'Best/Good/OK':'Percentages')+'</b>) requires AIOStreams scored sorting. Follow all 3 steps below.</div>';
-  }else{
-    g.innerHTML='<div class="note">Your selection (<b>'+(C.qual==='tier'?'Tiers':'Source Only')+'</b>) works from filenames — no AIOStreams setup needed. Just import the Fusion filters below.</div>';
-  }
+  g.innerHTML='<div class="note">您的自定义预设已完全基于文件名匹配，无需导入任何评分（Scoring）模板，享受超轻量化运行。</div>';
 }
 
 function cc(id){navigator.clipboard.writeText(document.getElementById(id).value).then(()=>{const t=document.getElementById('toast');t.style.display='block';setTimeout(()=>t.style.display='none',1500)})}
