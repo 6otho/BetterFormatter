@@ -54,7 +54,7 @@ function gen(C){
   T.push(mk('a-at','Atmos','(?i)'+ATMOS,'dolby-atmos-x.svg',ST.tr,'ga'));
   T.push(mk('a-th','TrueHD','(?i)^(?=.*'+TH+')(?!.*'+ATMOS+')','true-hd-1.svg',ST.tr,'ga'));
   T.push(mk('a-dp','DD+','(?i)^(?=.*'+DDP+')(?!.*'+ATMOS+')(?!.*'+TH+')','dolby-digitalplus-x.svg',ST.tr,'ga'));
-  T.push(mk('a-dd','DD','(?i)^(?=.*'+DD+')(?!.*'+DDP+')(?!.*'+TH+')(?!.*'+ATMOS+')','dolby-digital-x.svg',ST.tr,'ga'));
+  T.push(mk('a-dd','DD','(?i)^(?=.*'+DD+')(?!.*'+DDP+')(?!.*'+TH+')(?!.*ATMOS)','dolby-digital-x.svg',ST.tr,'ga'));
 
   // 6) Channels
   T.push(mk('ch-71','7.1','[^0-9][7-8][. ][01](?![0-9])','7.1-6.svg',ST.tr,'gc'));
