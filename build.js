@@ -3,12 +3,13 @@
 // All lookahead patterns use ^ anchor for mutual exclusion
 const fs=require('fs'),path=require('path');
 
-// 【修改确认】此处已换成你的专属图片库路径
-const I='https://raw.githubusercontent.com/6otho/Epx-Badge/main/Badges/';
+// 【已修正】换成 jsDelivr CDN 路径，完美解决 Web 端 CORS / MIME 类型拦截
+const I='https://cdn.jsdelivr.net/gh/6otho/Epx-Badge@main/Badges/';
 
 const ST={
   best:{bc:'#FF00FF37',bg:'#E600E932',tc:'#27C04F'},
   good:{bc:'#FF2D9943',bg:'#3300E932',tc:'#27C04F'},
+  bad:{bc:'#FF9D613D',bg:'#33FF7728',tc:'#FF6904'}, // 【已修正】补全缺失的 bad 配置，防止 bgb 编译报错
   res:{bc:'#FF858283',bg:'#33FFFFFF',tc:'#FFFFFF'},
   tr:{bc:'#00000000',bg:'#00000000',tc:'#FFFFFF'},
   dim:{bc:'#00000000',bg:'#00000000',tc:'#80FFFFFF'},
@@ -19,7 +20,8 @@ function hx(r,g,b){return((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1).toUppe
 function pctS(p){const c=hsl((p/100)*120,1,.45),h=hx(...c);return{bc:'#66'+h,bg:'#33'+h,tc:'#FF'+h}}
 
 function mk(id,name,pat,img,st,gid){
-  return{borderColor:st.bc,groupId:gid,id,imageURL:img?I+img:'',isEnabled:true,name,pattern:pat,tagColor:st.bg,tagStyle:'filled and bordered',textColor:st.tc,type:'filter'};
+  // 【已修正】将 tagStyle 修改为 "filled"，彻底修复 Nuvio 渲染自定义 SVG 空白崩溃的 Bug
+  return{borderColor:st.bc,groupId:gid,id,imageURL:img?I+img:'',isEnabled:true,name,pattern:pat,tagColor:st.bg,tagStyle:'filled',textColor:st.tc,type:'filter'};
 }
 
 // TRaSH Guides release groups per tier
@@ -114,43 +116,50 @@ function gen(C){
   }
 
   T.push(mk('v-seadex','SeaDex','(?i)\\b(?:seadex|best[\\s._-]?release|alt[\\s._-]?(?:best[\\s._-]?)?release)\\b|\u1d00\u029f\u1d1b \u0280\u1d07\u029f\u1d07\u1d00s\u1d07|\u0299\u1d07s\u1d1b \u0280\u1d07\u029f\u1d07\u1d00s\u1d07',p+'-SeaDex.png',mono?ST.res:ST.best,'gv'));
-  T.push(mk('r-4k','4K','(?i)^(?=.*(?:2160[pi]?|4k|uhd))(?!.*(?:1080[pi]?|720[pi]?))','4k.png',ST.res,'gr'));
-  T.push(mk('r-1080','1080p','(?i)\\b1080[pi]?\\b','1080p.png',ST.res,'gr'));
-  T.push(mk('r-720','720p','(?i)\\b720[pi]?\\b','720p.png',ST.res,'gr'));
+  
+  // 【已修正对齐 SVG 文件名】
+  T.push(mk('r-4k','4K','(?i)^(?=.*(?:2160[pi]?|4k|uhd))(?!.*(?:1080[pi]?|720[pi]?))','4Kx-1.svg',ST.res,'gr'));
+  T.push(mk('r-1080','1080p','(?i)\\b1080[pi]?\\b','1080p-a.svg',ST.res,'gr'));
+  T.push(mk('r-720','720p','(?i)\\b720[pi]?\\b','720p-b.svg',ST.res,'gr'));
 
-  T.push(mk('a-dtsx','DTS:X','(?i)\\bdts[-_.: ]?x\\b','dtsx.png',ST.res,'ga'));
-  T.push(mk('a-dtsma','DTS-HD MA','(?i)^(?=.*\\bdts[-_. ]?(?:hd[-_. ]?)?ma\\b)(?!.*\\bdts[-_.: ]?x\\b)','dtshdma.png',ST.res,'ga'));
-  T.push(mk('a-dtshd','DTS-HD','(?i)^(?=.*\\bdts[-_. ]?hd\\b)(?!.*\\bdts[-_. ]?(?:hd[-_. ]?)?ma\\b)(?!.*\\bdts[-_.: ]?x\\b)','dtshd.png',ST.res,'ga'));
-  T.push(mk('a-dts','DTS','(?i)^(?=.*\\bDTS\\b)(?!.*\\bdts[-_. ]?(?:hd|ma|xll|x)\\b)','dts.png',ST.res,'ga'));
+  // 【已修正对齐 SVG 文件名】
+  T.push(mk('a-dtsx','DTS:X','(?i)\\bdts[-_.: ]?x\\b','dts-x.svg',ST.res,'ga'));
+  T.push(mk('a-dtsma','DTS-HD MA','(?i)^(?=.*\\bdts[-_. ]?(?:hd[-_. ]?)?ma\\b)(?!.*\\bdts[-_.: ]?x\\b)','dts-hd-ma.svg',ST.res,'ga'));
+  T.push(mk('a-dtshd','DTS-HD','(?i)^(?=.*\\bdts[-_. ]?hd\\b)(?!.*\\bdts[-_. ]?(?:hd[-_. ]?)?ma\\b)(?!.*\\bdts[-_.: ]?x\\b)','dts-hd.svg',ST.res,'ga'));
+  T.push(mk('a-dts','DTS','(?i)^(?=.*\\bDTS\\b)(?!.*\\bdts[-_. ]?(?:hd|ma|xll|x)\\b)','dts.svg',ST.res,'ga'));
 
+  // 【已修正对齐 SVG 文件名】
   const dvBlock=C.hdr==='nodv'?'(?!.*'+DV+')':'';
-  T.push(mk('v-hdr10p','HDR10+','(?i)^'+dvBlock+'(?=.*hdr[\\s._-]?10[\\s._-]?(?:\\\\+|plus|p))','HDR10Plus.png',ST.res,'gv'));
-  T.push(mk('v-hdr10','HDR10','(?i)^'+dvBlock+'(?=.*hdr[\\s._-]?10)(?!.*hdr[\\s._-]?10[\\s._-]?(?:\\\\+|plus|p))','HDR10.png',ST.res,'gv'));
-  T.push(mk('v-hdr','HDR','(?i)^'+dvBlock+'(?=.*\\bHDR\\b)(?!.*hdr[\\s._-]?10)','HDR.png',ST.res,'gv'));
+  T.push(mk('v-hdr10p','HDR10+','(?i)^'+dvBlock+'(?=.*hdr[\\s._-]?10[\\s._-]?(?:\\\\+|plus|p))','hdr10p-xx.svg',ST.res,'gv'));
+  T.push(mk('v-hdr10','HDR10','(?i)^'+dvBlock+'(?=.*hdr[\\s._-]?10)(?!.*hdr[\\s._-]?10[\\s._-]?(?:\\\\+|plus|p))','hdr10-x.svg',ST.res,'gv'));
+  T.push(mk('v-hdr','HDR','(?i)^'+dvBlock+'(?=.*\\bHDR\\b)(?!.*hdr[\\s._-]?10)','hdr-x.svg',ST.res,'gv'));
 
-  T.push(mk('v-imax-e','IMAX Enhanced','(?i)\\bimax[\\s._-]?enhanced\\b','IMAX-enhanced.png',ST.res,'gv'));
-  T.push(mk('v-imax','IMAX','(?i)^(?=.*\\bIMAX\\b)(?!.*enhanced)','IMAX.png',ST.res,'gv'));
+  // 【已修正对齐 SVG 文件名】
+  T.push(mk('v-imax-e','IMAX Enhanced','(?i)\\bimax[\\s._-]?enhanced\\b','imax-e.svg',ST.res,'gv'));
+  T.push(mk('v-imax','IMAX','(?i)^(?=.*\\bIMAX\\b)(?!.*enhanced)','imax.svg',ST.res,'gv'));
 
+  // 【已修正对齐 SVG/PNG 文件名】
   if(C.dv==='combo'){
     T.push(mk('a-at-dv','Atmos+DV','(?i)^(?=.*'+ATMOS+')(?=.*'+DV+')','atmos-vision.png',ST.tr,'ga'));
-    T.push(mk('a-at','Atmos','(?i)^(?=.*'+ATMOS+')(?!.*'+DV+')','atmos.png',ST.tr,'ga'));
+    T.push(mk('a-at','Atmos','(?i)^(?=.*'+ATMOS+')(?!.*'+DV+')','dolby-atmos-x.svg',ST.tr,'ga'));
     T.push(mk('a-th-dv','TrueHD+DV','(?i)^(?=.*'+TH+')(?!.*'+ATMOS+')(?=.*'+DV+')','truehd-vision.png',ST.tr,'ga'));
-    T.push(mk('a-th','TrueHD','(?i)^(?=.*'+TH+')(?!.*'+ATMOS+')(?!.*'+DV+')','truehd.png',ST.tr,'ga'));
+    T.push(mk('a-th','TrueHD','(?i)^(?=.*'+TH+')(?!.*'+ATMOS+')(?!.*'+DV+')','true-hd-1.svg',ST.tr,'ga'));
     T.push(mk('a-dp-dv','DD++DV','(?i)^(?=.*'+DDP+')(?!.*'+ATMOS+')(?!.*'+TH+')(?=.*'+DV+')','digitalplus-vision.png',ST.tr,'ga'));
-    T.push(mk('a-dp','DD+','(?i)^(?=.*'+DDP+')(?!.*'+ATMOS+')(?!.*'+TH+')(?!.*'+DV+')','digitalplus.png',ST.tr,'ga'));
+    T.push(mk('a-dp','DD+','(?i)^(?=.*'+DDP+')(?!.*'+ATMOS+')(?!.*'+TH+')(?!.*'+DV+')','dolby-digitalplus-x.svg',ST.tr,'ga'));
     T.push(mk('a-dd-dv','DD+DV','(?i)^(?=.*'+DD+')(?!.*'+DDP+')(?!.*'+TH+')(?!.*'+ATMOS+')(?=.*'+DV+')','digital-vision.png',ST.tr,'ga'));
-    T.push(mk('a-dd','DD','(?i)^(?=.*'+DD+')(?!.*'+DDP+')(?!.*'+TH+')(?!.*'+ATMOS+')(?!.*'+DV+')','digital.png',ST.tr,'ga'));
-    T.push(mk('a-dv','DV','(?i)^(?=.*'+DV+')(?!.*'+ATMOS+')(?!.*'+TH+')(?!.*'+DDP+')(?!.*'+DD+')','vision.png',ST.tr,'gv'));
+    T.push(mk('a-dd','DD','(?i)^(?=.*'+DD+')(?!.*'+DDP+')(?!.*'+TH+')(?!.*'+ATMOS+')(?!.*'+DV+')','dolby-digital-x.svg',ST.tr,'ga'));
+    T.push(mk('a-dv','DV','(?i)^(?=.*'+DV+')(?!.*'+ATMOS+')(?!.*'+TH+')(?!.*'+DDP+')(?!.*'+DD+')','dolby-vision-x.svg',ST.tr,'gv'));
   }else{
-    T.push(mk('a-dv','DV','(?i)'+DV,'vision.png',ST.tr,'gv'));
-    T.push(mk('a-at','Atmos','(?i)'+ATMOS,'atmos.png',ST.tr,'ga'));
-    T.push(mk('a-th','TrueHD','(?i)^(?=.*'+TH+')(?!.*'+ATMOS+')','truehd.png',ST.tr,'ga'));
-    T.push(mk('a-dp','DD+','(?i)^(?=.*'+DDP+')(?!.*'+ATMOS+')(?!.*'+TH+')','digitalplus.png',ST.tr,'ga'));
-    T.push(mk('a-dd','DD','(?i)^(?=.*'+DD+')(?!.*'+DDP+')(?!.*'+TH+')(?!.*'+ATMOS+')','digital.png',ST.tr,'ga'));
+    T.push(mk('a-dv','DV','(?i)'+DV,'dolby-vision-x.svg',ST.tr,'gv'));
+    T.push(mk('a-at','Atmos','(?i)'+ATMOS,'dolby-atmos-x.svg',ST.tr,'ga'));
+    T.push(mk('a-th','TrueHD','(?i)^(?=.*'+TH+')(?!.*'+ATMOS+')','true-hd-1.svg',ST.tr,'ga'));
+    T.push(mk('a-dp','DD+','(?i)^(?=.*'+DDP+')(?!.*'+ATMOS+')(?!.*'+TH+')','dolby-digitalplus-x.svg',ST.tr,'ga'));
+    T.push(mk('a-dd','DD','(?i)^(?=.*'+DD+')(?!.*'+DDP+')(?!.*'+TH+')(?!.*'+ATMOS+')','dolby-digital-x.svg',ST.tr,'ga'));
   }
 
-  T.push(mk('ch-71','7.1','[^0-9][7-8][. ][01](?![0-9])','7dot1.png',ST.tr,'gc'));
-  T.push(mk('ch-51','5.1','^(?=.*[^0-9]5[. ][01](?![0-9]))(?!.*[^0-9][7-8][. ][01](?![0-9]))','5dot1.png',ST.tr,'gc'));
+  // 【已修正对齐 SVG 文件名】
+  T.push(mk('ch-71','7.1','[^0-9][7-8][. ][01](?![0-9])','7.1-6.svg',ST.tr,'gc'));
+  T.push(mk('ch-51','5.1','^(?=.*[^0-9]5[. ][01](?![0-9]))(?!.*[^0-9][7-8][. ][01](?![0-9]))','5.1-6.svg',ST.tr,'gc'));
 
   const L=[['en','\ud83c\uddec\ud83c\udde7','(?i)\\benglish\\b|\\beng\\b'],['es','\ud83c\uddea\ud83c\uddf8','(?i)\\bspanish\\b|\\bspa\\b'],['fr','\ud83c\uddeb\ud83c\uddf7','(?i)\\bfrench\\b|\\bfra\\b|\\bfr\\b|\\bvff\\b|\\bvfq\\b'],['de','\ud83c\udde9\ud83c\uddea','(?i)\\bgerman\\b|\\bdeu\\b'],['it','\ud83c\uddee\ud83c\uddf9','(?i)\\bitalian\\b|\\bita\\b'],['pt','\ud83c\udde7\ud83c\uddf7','(?i)\\bportuguese\\b|\\bpor\\b'],['ja','\ud83c\uddef\ud83c\uddf5','(?i)\\bjapanese\\b|\\bjpn\\b|[\u3040-\u309F\u30A0-\u30FF]{3,}'],['ko','\ud83c\uddf0\ud83c\uddf7','(?i)\\bkorean\\b|\\bkor\\b|[\uAC00-\uD7AF]{3,}'],['zh','\ud83c\udde8\ud83c\uddf3','(?i)\\bchinese\\b|\\bchi\\b|[\u4E00-\u9FFF]{3,}'],['hi','\ud83c\uddee\ud83c\uddf3','(?i)\\bhindi\\b|\\bhin\\b|[\u0900-\u097F]{3,}'],['ar','\ud83c\uddf8\ud83c\udde6','(?i)\\barabic\\b|\\bara\\b|[\u0600-\u06FF]{3,}'],['ru','\ud83c\uddf7\ud83c\uddfa','(?i)\\brussian\\b|\\brus\\b|[\u0400-\u04FF]{3,}'],['mu','\ud83c\udf10','(?i)\\bmulti\\b|\\bdual[\\s._-]?audio\\b']];
   for(const[c,f,pt] of L)T.push(mk('l-'+c,f,pt,'',ST.dim,'gl'));
